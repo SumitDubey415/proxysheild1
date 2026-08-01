@@ -153,6 +153,21 @@ def _resolve_path(p):
     full = os.path.join(BASE_DIR, clean)
     return full if os.path.exists(full) else p
 
+def _crop_face_region(img):
+    if img is None:
+        return img
+    try:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        if face_cascade is not None and hasattr(face_cascade, 'detectMultiScale'):
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4, minSize=(40, 40))
+            if len(faces) > 0:
+                x, y, w, h = max(faces, key=lambda b: b[2] * b[3])
+                return img[y:y+h, x:x+w]
+        h_img, w_img = img.shape[:2]
+        return img[int(h_img * 0.15):int(h_img * 0.85), int(w_img * 0.15):int(w_img * 0.85)]
+    except Exception:
+        return img
+
 def robust_composite_face_match(img_path1, img_path2):
     """
     Robust Composite Anti-Proxy Face Matcher.
