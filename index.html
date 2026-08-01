@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}ProxyShield — Smart Anti-Proxy Attendance System{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:24px;">
+  <h1>ProxyShield Smart Attendance Platform</h1>
+  <div class="sub">High-Speed ID Card Verification, In-Browser Face Matching, and Anti-Proxy Attendance Management System.</div>
+</div>
+
+<div class="grid" style="margin-bottom:24px;">
+  <!-- Kiosk Card -->
+  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
+    <div>
+      <div class="panel-label">Module 1 · Scanner</div>
+      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Kiosk Verification</h2>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
+        Capture ID Card photo with in-browser OCR, take live selfie, and run Euclidean face matching directly in your browser.
+      </p>
+    </div>
+    <a href="/kiosk" class="btn">📷 Launch Kiosk Verification</a>
+  </div>
+
+  <!-- Admin Panel Card -->
+  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
+    <div>
+      <div class="panel-label">Module 2 · Dashboard</div>
+      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Faculty Admin Panel</h2>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
+        View attendance records, filter by date, review verification notes, export report summaries, and manage database logs.
+      </p>
+    </div>
+    <a href="/admin" class="btn amber">📊 Open Faculty Admin</a>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- Student Portal Card -->
+  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
+    <div>
+      <div class="panel-label">Module 3 · Student</div>
+      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Student Attendance Portal</h2>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
+        Students enter their Student ID / Roll No to inspect total attendance percentage and status breakdown.
+      </p>
+    </div>
+    <a href="/student" class="btn secondary">🎓 Check Student Portal</a>
+  </div>
+
+  <!-- Enroll Student Card -->
+  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
+    <div>
+      <div class="panel-label">Module 4 · Registration</div>
+      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Enroll Student Baseline</h2>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
+        Register student details, Student ID, branch, and upload reference photo for baseline enrollment.
+      </p>
+    </div>
+    <a href="/enroll" class="btn secondary">👤 Register New Student</a>
+  </div>
+</div>
+{% endblock %}
