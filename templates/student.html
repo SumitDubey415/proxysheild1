@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}ProxyShield — Student Attendance Portal{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:24px;">
+    <h1>Student Attendance Portal</h1>
+    <div class="sub">Enter your Student ID / Roll No to inspect attendance history and eligibility standing.</div>
+</div>
+
+<!-- Search Input Box -->
+<div class="panel" style="margin-bottom:24px;">
+    <div class="panel-label">Student ID Lookup</div>
+    <form id="studentSearchForm" style="display:flex; gap:12px; flex-wrap:wrap;">
+        <input type="text" id="studentUidInput" required placeholder="Enter Student ID (e.g. 725101)..." style="flex:1; min-width:200px;">
+        <button type="submit" class="btn" style="width:auto; padding:11px 20px; font-size:13.5px;">Check Attendance</button>
+    </form>
+</div>
+
+<!-- Alert Box -->
+<div id="studentPortalAlert" style="display:none;" class="result-badge"></div>
+
+<!-- Summary Result Container -->
+<div id="studentSummaryResult" style="display:none;" class="space-y-6">
+    <!-- Eligibility Banners -->
+    <div id="eligibilityWarningBanner" style="display:none;" class="result-badge fail">
+        ⚠ Attendance Warning (&lt; 75% Requirement)
+        <div class="sub-msg">Your overall attendance is below 75%. You are at risk of exam debarment.</div>
+    </div>
+    
+    <div id="eligibilitySuccessBanner" style="display:none;" class="result-badge match">
+        ✔ Good Academic Standing (&ge; 75%)
+        <div class="sub-msg">Your overall attendance meets eligibility requirements for exams.</div>
+    </div>
+
+    <!-- Profile & Metrics Grid -->
+    <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div>
+                <div class="panel-label">Student Record</div>
+                <h2 id="studentName" style="font-size:22px; font-weight:700; color:var(--text);">Student Name</h2>
+                <div style="font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:4px;">
+                    <span id="studentUidBadge" class="tag cyan">UID: 725101</span> &bull; <span id="studentBranchBadge">Branch</span>
+                </div>
+            </div>
+            
+            <div style="text-align:right;">
+                <div class="panel-label">Attendance Score</div>
+                <div id="percentageValue" style="font-family:'JetBrains Mono', monospace; font-size:32px; font-weight:800; color:var(--cyan);">0%</div>
+            </div>
+        </div>
+        
+        <div class="status-line" style="margin-top:16px;"><span>Total Sessions</span><span class="val" id="countTotal">0</span></div>
+        <div class="status-line"><span>Present Sessions</span><span class="val cyan" id="countPresent">0</span></div>
+        <div class="status-line"><span>Absent / Flagged</span><span class="val red" id="countAbsent">0</span></div>
+    </div>
+
+    <!-- Attendance History Table -->
+    <div class="panel" style="padding:0; overflow:hidden;">
+        <div class="panel-label" style="padding:16px 16px 0 16px;">Scan History Logs</div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody id="studentLogsTableBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/student.js"></script>
+{% endblock %}

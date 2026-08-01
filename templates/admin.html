@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}ProxyShield — Faculty Admin Dashboard{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <div>
+        <h1>Faculty Admin Dashboard</h1>
+        <div class="sub" style="margin-bottom:0;">Review live verification logs, proxy alerts, and export attendance records.</div>
+    </div>
+    
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button onclick="clearAllAttendanceLogs()" class="btn red" style="width:auto; padding:10px 14px; font-size:12.5px;">Clear Logs</button>
+        <a href="/api/reports/pdf" target="_blank" class="btn secondary" style="width:auto; padding:10px 14px; font-size:12.5px;">PDF Report</a>
+        <a href="/api/reports/excel" target="_blank" class="btn secondary" style="width:auto; padding:10px 14px; font-size:12.5px;">Excel Report</a>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:20px;">
+    <div class="panel" style="padding:16px;">
+        <div class="panel-label">Total Verifications</div>
+        <div id="statTotal" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--text);">0</div>
+    </div>
+    <div class="panel" style="padding:16px;">
+        <div class="panel-label">Verified Present</div>
+        <div id="statPresent" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--cyan);">0</div>
+    </div>
+    <div class="panel" style="padding:16px;">
+        <div class="panel-label">Proxy Alerts</div>
+        <div id="statProxy" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--amber);">0</div>
+    </div>
+    <div class="panel" style="padding:16px;">
+        <div class="panel-label">No Face / Absent</div>
+        <div id="statNoFace" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--red);">0</div>
+    </div>
+</div>
+
+<!-- Filter Control Bar -->
+<div class="panel" style="margin-bottom:20px; padding:16px;">
+    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+        <div style="display:flex; flex-wrap:wrap; gap:10px; flex:1;">
+            <input type="date" id="filterDate" onchange="fetchAdminAttendance()" style="width:auto; min-width:160px;">
+            <select id="filterBranch" onchange="fetchAdminAttendance()" style="width:auto; min-width:160px;">
+                <option value="">All Branches</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Information Tech">Information Tech</option>
+                <option value="Electronics">Electronics</option>
+                <option value="General">General</option>
+            </select>
+            <select id="filterStatus" onchange="fetchAdminAttendance()" style="width:auto; min-width:160px;">
+                <option value="">All Statuses</option>
+                <option value="PRESENT">PRESENT</option>
+                <option value="ABSENT">ABSENT</option>
+                <option value="PROXY_ALERT">PROXY_ALERT</option>
+            </select>
+            <input type="text" id="filterSearch" placeholder="Search Name or UID..." onkeyup="fetchAdminAttendance()" style="width:auto; min-width:200px;">
+        </div>
+        <button onclick="fetchAdminAttendance()" class="btn" style="width:auto; padding:10px 16px; font-size:13px;">Refresh Table</button>
+    </div>
+</div>
+
+<!-- Table View Panel -->
+<div class="panel" style="padding:0; overflow:hidden;">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th># ID</th>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Branch</th>
+                    <th>Scan Time</th>
+                    <th>Status</th>
+                    <th>Verification Note</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+                <!-- Dynamic Rows -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/admin.js?v=1.0.2"></script>
+{% endblock %}

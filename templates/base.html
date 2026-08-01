@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ProxyShield — Live Verification Platform{% endblock %}</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+      :root {
+        /* Light Theme (Default - OneTap / Stripe SaaS Design System) */
+        --bg: #F8FAFC;
+        --panel: #FFFFFF;
+        --panel-2: #F1F5F9;
+        --line: #E2E8F0;
+        --cyan: #2563EB; /* Crisp Royal Blue Accent */
+        --cyan-dim: #1D4ED8;
+        --amber: #D97706;
+        --red: #DC2626;
+        --text: #1E293B; /* Readable Dark Gray */
+        --text-dim: #64748B;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        --btn-text: #FFFFFF;
+        --cam-bg: #0F172A;
+        --modal-bg: rgba(255, 255, 255, 0.95);
+      }
+
+      [data-theme="dark"] {
+        /* Sleek Dark Theme */
+        --bg: #0F172A;
+        --panel: #1E293B;
+        --panel-2: #0F172A;
+        --line: #334155;
+        --cyan: #38BDF8; /* Sky Cyan Accent */
+        --cyan-dim: #0284C7;
+        --amber: #F59E0B;
+        --red: #EF4444;
+        --text: #F8FAFC;
+        --text-dim: #94A3B8;
+        --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+        --btn-text: #0F172A;
+        --cam-bg: #05070A;
+        --modal-bg: rgba(15, 23, 42, 0.95);
+      }
+
+      *{box-sizing:border-box; margin:0; padding:0;}
+      body{
+        background: var(--bg);
+        color:var(--text); font-family:'Plus Jakarta Sans', 'Inter', sans-serif;
+        min-height:100vh; padding:20px 16px; display:flex; flex-direction:column; align-items:center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .wrap{width:100%; max-width:960px;}
+
+      /* ProxyShield Header Navigation Bar */
+      .sys-nav {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--line);
+        width: 100%; flex-wrap: wrap; gap: 12px;
+      }
+      .eyebrow{
+        font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+        text-transform:uppercase; color:var(--cyan); display:flex; align-items:center; gap:8px;
+        font-weight: 700;
+      }
+      .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 1.8s infinite;}
+      @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+      .nav-links { display: flex; gap: 16px; align-items:center; flex-wrap: wrap; }
+      .nav-links a {
+        color: var(--text-dim); text-decoration: none; font-size: 13px; font-weight: 600;
+        transition: color 0.15s ease;
+      }
+      .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+
+      /* Theme Switcher Button */
+      .theme-btn {
+        background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+        padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        cursor: pointer; display: flex; align-items: center; gap: 6px;
+        transition: all 0.15s ease; outline: none; font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      .theme-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+      h1{font-size:26px; font-weight:800; letter-spacing:-0.01em; margin-bottom:4px; color:var(--text);}
+      .sub{color:var(--text-dim); font-size:13px; margin-bottom:24px; line-height:1.5;}
+
+      .grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+      @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+
+      .panel{
+        background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;
+        box-shadow: var(--card-shadow); transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .panel-label{font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; font-weight: 600;}
+
+      input[type=file]{ display:none !important; }
+      .hidden{ display:none !important; }
+
+      input[type=text], input[type=date], input[type=password], select {
+        width:100%; padding:11px 14px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px;
+        color:var(--text); font-family:'JetBrains Mono', monospace; font-size:14px; outline:none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+      input[type=text]:focus, input[type=date]:focus, input[type=password]:focus, select:focus {
+        border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+      }
+
+      .btn{
+        display:inline-block; width:100%; padding:12px 18px; background:var(--cyan); color:var(--btn-text);
+        border:none; border-radius:10px; font-weight:700; font-size:14px; text-align:center; cursor:pointer;
+        transition:all 0.15s ease; font-family:'Plus Jakarta Sans', 'Inter', sans-serif; text-decoration:none;
+        box-shadow: 0 2px 4px rgba(37,99,235,0.15);
+      }
+      .btn:hover{filter:brightness(1.08); transform:translateY(-1px);}
+      .btn:active{transform:translateY(0);}
+      .btn.secondary{background:var(--panel-2); border:1px solid var(--line); color:var(--text); box-shadow:none;}
+      .btn.amber{background:var(--amber); color:#FFFFFF;}
+      .btn.red{background:rgba(220,38,38,0.1); border:1px solid var(--red); color:var(--red); box-shadow:none;}
+
+      .status-line{
+        font-family:'JetBrains Mono', monospace; font-size:12.5px; color:var(--text-dim);
+        display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);
+      }
+      .status-line:last-child{border-bottom:none;}
+      .status-line .val{color:var(--text); font-weight:500;}
+      .status-line .val.cyan{color:var(--cyan);}
+      .status-line .val.red{color:var(--red);}
+
+      .result-badge{
+        margin-top:16px; padding:16px; border-radius:10px; text-align:center;
+        font-family:'JetBrains Mono', monospace; font-weight:700; font-size:14px;
+        border:1px solid var(--line); background:var(--panel-2); color:var(--text-dim);
+      }
+      .result-badge.match{background:rgba(37,99,235,0.08); border-color:var(--cyan); color:var(--cyan);}
+      .result-badge.fail{background:rgba(220,38,38,0.08); border-color:var(--red); color:var(--red);}
+      .result-badge .sub-msg{font-family:'Plus Jakarta Sans', 'Inter', sans-serif; font-weight:400; font-size:12px; color:var(--text-dim); margin-top:6px;}
+
+      .table-container { width:100%; overflow-x:auto; margin-top:12px; border-radius:10px; border:1px solid var(--line); }
+      table { width:100%; border-collapse:collapse; font-family:'JetBrains Mono', monospace; font-size:12.5px; }
+      th { text-align:left; padding:12px 14px; color:var(--text-dim); background:var(--panel-2); border-bottom:1px solid var(--line); font-size:11px; text-transform:uppercase; letter-spacing:0.08em; }
+      td { padding:12px 14px; border-bottom:1px solid var(--line); color:var(--text); background:var(--panel); }
+      tr:last-child td { border-bottom:none; }
+      tr:hover td { background:var(--panel-2); }
+
+      .tag { display:inline-block; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+      .tag.cyan { background:rgba(37,99,235,0.1); color:var(--cyan); border:1px solid var(--cyan); }
+      .tag.red { background:rgba(220,38,38,0.1); color:var(--red); border:1px solid var(--red); }
+      .tag.amber { background:rgba(217,119,6,0.1); color:var(--amber); border:1px solid var(--amber); }
+
+      .footer-note{margin-top:28px; font-size:11.5px; color:var(--text-dim); text-align:center; line-height:1.6; width:100%;}
+      .footer-note code{font-family:'JetBrains Mono', monospace; color:var(--cyan);}
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<div class="wrap">
+  <!-- ProxyShield Unified Header Navigation -->
+  <div class="sys-nav">
+    <a href="/" style="text-decoration:none;">
+        <div class="eyebrow" style="margin-bottom:0;"><span class="dot"></span>PROXYSHIELD · SMART ATTENDANCE</div>
+    </a>
+    <div class="nav-links">
+      <a href="/kiosk" class="{% if request.url.path == '/kiosk' %}active{% endif %}">Kiosk Verification</a>
+      <a href="/admin" onclick="return checkFacultyAccess('/admin')" class="{% if request.url.path == '/admin' %}active{% endif %}">Faculty Admin</a>
+      <a href="/student" class="{% if request.url.path == '/student' %}active{% endif %}">Student Portal</a>
+      <a href="/enroll" onclick="return checkFacultyAccess('/enroll')" class="{% if request.url.path == '/enroll' %}active{% endif %}">Enroll Student</a>
+      <a href="#" id="facultyLogoutBtn" onclick="facultyLogout()" style="display:none; color:var(--red); font-size:12px;">🔒 Logout</a>
+      
+      <!-- Sleek Theme Switcher Button -->
+      <button id="themeToggleBtn" class="theme-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+        <span id="themeIcon">☀️</span> <span id="themeText">Light</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Body Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <div class="footer-note">
+    PROXYSHIELD &bull; Smart Anti-Proxy Attendance Platform &bull; Real-Time In-Browser Verification & SQLite Database Dispatch
+  </div>
+</div>
+
+<!-- Faculty Security Passcode Modal -->
+<div id="facultyAuthModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--modal-bg); backdrop-filter:blur(8px); align-items:center; justify-content:center; z-index:9999;">
+  <div class="panel" style="width:100%; max-width:400px; padding:28px; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.2); border:1px solid var(--line);">
+    <div style="font-size:32px; margin-bottom:8px;">🔒</div>
+    <h2 style="font-size:18px; font-weight:700; margin-bottom:6px; color:var(--text);">Faculty Security Passcode</h2>
+    <p style="font-size:12px; color:var(--text-dim); margin-bottom:18px;">Restricted Access: Enter Faculty Passcode to unlock Admin Dashboard & Student Enrollment.</p>
+    
+    <input type="password" id="facultyPasscode" placeholder="Enter Passcode" style="width:100%; padding:11px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:'JetBrains Mono', monospace; text-align:center; letter-spacing:0.2em; font-size:16px; margin-bottom:12px; outline:none;" onkeyup="if(event.key==='Enter') verifyFacultyPasscode()">
+    <div id="passcodeError" style="font-size:12px; color:var(--red); margin-bottom:12px; display:none;">Invalid Faculty Security Passcode ✗</div>
+
+    <button onclick="verifyFacultyPasscode()" class="btn" style="margin-bottom:8px; cursor:pointer;">Unlock Access</button>
+    <button onclick="window.location.href='/kiosk'" class="btn secondary" style="cursor:pointer;">Cancel · Back to Kiosk</button>
+  </div>
+</div>
+
+<script>
+    // --- Theme Switcher Logic ---
+    function initTheme() {
+        const savedTheme = localStorage.getItem('ps_theme') || 'light';
+        setTheme(savedTheme);
+    }
+
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('ps_theme', 'dark');
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (icon) icon.textContent = '🌙';
+            if (text) text.textContent = 'Dark';
+        } else {
+            document.body.removeAttribute('data-theme');
+            localStorage.setItem('ps_theme', 'light');
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (icon) icon.textContent = '☀️';
+            if (text) text.textContent = 'Light';
+        }
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.hasAttribute('data-theme');
+        setTheme(isDark ? 'light' : 'dark');
+    }
+
+    // Initialize Theme immediately
+    initTheme();
+
+    if (window.lucide) { lucide.createIcons(); }
+
+    const isProtectedPath = ['/admin', '/enroll'].includes(window.location.pathname);
+
+    function isFacultyAuth() {
+        return sessionStorage.getItem('faculty_authenticated') === 'true';
+    }
+
+    function checkFacultyAccess(targetPath) {
+        if (isFacultyAuth()) return true;
+        showAuthModal(targetPath);
+        return false;
+    }
+
+    let pendingTarget = null;
+    function showAuthModal(target = null) {
+        pendingTarget = target;
+        const modal = document.getElementById('facultyAuthModal');
+        if (modal) modal.style.display = 'flex';
+        const passInput = document.getElementById('facultyPasscode');
+        if (passInput) passInput.focus();
+    }
+
+    function verifyFacultyPasscode() {
+        const passInput = document.getElementById('facultyPasscode');
+        const passErr = document.getElementById('passcodeError');
+        const val = passInput ? passInput.value.trim() : '';
+
+        if (val === 'admin123' || val === 'faculty2026') {
+            sessionStorage.setItem('faculty_authenticated', 'true');
+            if (passErr) passErr.style.display = 'none';
+            const modal = document.getElementById('facultyAuthModal');
+            if (modal) modal.style.display = 'none';
+            updateNavState();
+            if (pendingTarget) {
+                window.location.href = pendingTarget;
+            } else {
+                window.location.reload();
+            }
+        } else {
+            if (passErr) passErr.style.display = 'block';
+        }
+    }
+
+    function facultyLogout() {
+        sessionStorage.removeItem('faculty_authenticated');
+        window.location.href = '/kiosk';
+    }
+
+    function updateNavState() {
+        const logoutBtn = document.getElementById('facultyLogoutBtn');
+        if (logoutBtn) {
+            logoutBtn.style.display = isFacultyAuth() ? 'inline-block' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavState();
+        if (isProtectedPath && !isFacultyAuth()) {
+            showAuthModal(window.location.pathname);
+        }
+    });
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

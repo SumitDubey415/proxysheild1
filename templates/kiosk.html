@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProxyShield — Strict Anti-Proxy Verification Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Light Theme (Default - OneTap / Stripe SaaS Design System) */
+    --bg: #F8FAFC;
+    --panel: #FFFFFF;
+    --panel-2: #F1F5F9;
+    --line: #E2E8F0;
+    --cyan: #2563EB; /* Crisp Royal Blue Accent */
+    --cyan-dim: #1D4ED8;
+    --amber: #D97706;
+    --red: #DC2626;
+    --text: #1E293B; /* Readable Dark Gray */
+    --text-dim: #64748B;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --btn-text: #FFFFFF;
+    --cam-bg: #0F172A;
+    --modal-bg: rgba(255, 255, 255, 0.95);
+  }
+
+  [data-theme="dark"] {
+    /* Sleek Dark Theme */
+    --bg: #0F172A;
+    --panel: #1E293B;
+    --panel-2: #0F172A;
+    --line: #334155;
+    --cyan: #38BDF8; /* Sky Cyan Accent */
+    --cyan-dim: #0284C7;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --text: #F8FAFC;
+    --text-dim: #94A3B8;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    --btn-text: #0F172A;
+    --cam-bg: #05070A;
+    --modal-bg: rgba(15, 23, 42, 0.95);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: var(--bg);
+    color:var(--text); font-family:'Plus Jakarta Sans', 'Inter', sans-serif;
+    min-height:100vh; padding:28px 16px; display:flex; justify-content:center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .wrap{width:100%; max-width:960px;}
+
+  /* System Nav Header */
+  .sys-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--line);
+    flex-wrap: wrap; gap: 12px;
+  }
+  .nav-links { display: flex; gap: 16px; align-items:center; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--text-dim); text-decoration: none; font-size: 13px; font-weight: 600;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+
+  .theme-btn {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s ease; outline: none; font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .theme-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--cyan); display:flex; align-items:center; gap:8px; margin-bottom:8px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  h1{font-size:26px; font-weight:800; letter-spacing:-0.01em; margin-bottom:4px;}
+  .sub{color:var(--text-dim); font-size:13px; margin-bottom:24px; line-height:1.5;}
+
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px;}
+  .panel-label{font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px;}
+
+  .capture-box{
+    height:240px; border:1.5px dashed var(--line); border-radius:10px;
+    background:#05070A; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; margin-bottom:14px; position:relative;
+  }
+  .capture-box video, .capture-box img{width:100%; height:100%; object-fit:contain; background:#05070A;}
+
+  input[type=file]{display:none !important;}
+  .capture-btn{
+    display:block; width:100%; padding:13px 18px; background:var(--cyan); color:#04211C;
+    border:none; border-radius:8px; font-weight:700; font-size:14px; text-align:center; cursor:pointer;
+    transition:filter 0.15s ease; font-family:'Inter', sans-serif;
+  }
+  .capture-btn:hover{filter:brightness(1.08);}
+  .capture-btn:active{transform:scale(0.98);}
+  .capture-btn.secondary{background:transparent; border:1px solid var(--line); color:var(--text); margin-top:8px;}
+
+  .status-line{
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; color:var(--text-dim);
+    display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);
+  }
+  .status-line:last-child{border-bottom:none;}
+  .status-line .val{color:var(--text); font-weight:500;}
+  .status-line .val.cyan{color:var(--cyan);}
+  .status-line .val.red{color:var(--red);}
+
+  .result-badge{
+    margin-top:16px; padding:16px; border-radius:10px; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:14px;
+    border:1px solid var(--line); background:var(--panel-2); color:var(--text-dim);
+  }
+  .result-badge.match{background:rgba(47,230,200,0.08); border-color:var(--cyan-dim); color:var(--cyan);}
+  .result-badge.fail{background:rgba(242,84,75,0.08); border-color:var(--red); color:var(--red);}
+  .result-badge .sub-msg{font-family:'Inter'; font-weight:400; font-size:12px; color:var(--text-dim); margin-top:6px;}
+
+  .verify-panel{margin-top:18px;}
+  .verify-btn{
+    width:100%; padding:14px; background:var(--amber); color:#2A1B00; border:none; border-radius:8px;
+    font-weight:700; font-size:14px; cursor:pointer; margin-top:6px;
+  }
+  .verify-btn:disabled{background:var(--line); color:var(--text-dim); cursor:not-allowed;}
+
+  .footer-note{margin-top:20px; font-size:11.5px; color:var(--text-dim); text-align:center; line-height:1.6;}
+  .footer-note code{font-family:'JetBrains Mono', monospace; color:var(--cyan);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- System Navigation Header -->
+  <div class="sys-nav">
+    <div class="eyebrow" style="margin-bottom:0;"><span class="dot"></span>PROXYSHIELD · STRICT ANTI-PROXY VERIFICATION</div>
+    <div class="nav-links">
+      <a href="/kiosk" class="active">Kiosk Verification</a>
+      <a href="/admin" onclick="return checkFacultyAccess('/admin')">Faculty Admin</a>
+      <a href="/student">Student Portal</a>
+      <a href="/enroll" onclick="return checkFacultyAccess('/enroll')">Enroll Student</a>
+      <a href="#" id="facultyLogoutBtn" onclick="facultyLogout()" style="display:none; color:var(--red); font-size:12px;">🔒 Logout</a>
+      <button id="themeToggleBtn" class="theme-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+        <span id="themeIcon">☀️</span> <span id="themeText">Light</span>
+      </button>
+    </div>
+  </div>
+
+  <h1>ID Card Verification</h1>
+  <div class="sub">Extract Student ID & match live selfie face against enrolled profile in database. Both ID & Face are strictly validated.</div>
+
+  <div class="grid">
+
+    <!-- ID CARD CAPTURE -->
+    <div class="panel">
+      <div class="panel-label" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Step 1 · Live ID Card Stream</span>
+        <button type="button" onclick="flipCardCamera()" style="background:transparent; border:none; color:var(--cyan); font-size:11px; cursor:pointer; font-family:'JetBrains Mono', monospace;">🔄 Flip Camera</button>
+      </div>
+      <div class="capture-box" id="cardBox">
+        <video id="cardWebcam" autoplay playsinline style="display:block;"></video>
+        <img id="cardPreviewImg" style="display:none;">
+        <canvas id="cardCanvas" style="display:none;"></canvas>
+      </div>
+
+      <button type="button" class="capture-btn" id="cardBtn" onclick="takeLiveCardSnapshot()">📷 Snapshot & Extract Student ID</button>
+      <input type="file" accept="image/*" id="cardInput">
+      <label for="cardInput" class="capture-btn secondary" style="cursor:pointer; text-align:center; display:block;">📁 Upload / Pick ID File</label>
+
+      <div style="margin-top:12px;">
+        <div class="panel-label" style="margin-bottom:8px;">Student ID (auto-read from photo, editable)</div>
+        <input type="text" id="uidInput" placeholder="Will fill after photo is captured" inputmode="numeric"
+          style="width:100%; padding:11px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:8px; color:var(--text); font-family:'JetBrains Mono', monospace; font-size:14px;">
+      </div>
+      <div class="status-line" style="margin-top:12px;"><span>ID card photo captured</span><span class="val" id="cardCode">—</span></div>
+      <div class="status-line"><span>Text scan (OCR)</span><span class="val cyan" id="ocrStatus">Ready</span></div>
+      <details style="margin-top:8px;">
+        <summary style="font-size:11px; color:var(--text-dim); cursor:pointer;">Raw text detected (for debugging)</summary>
+        <div id="ocrRaw" style="font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim); margin-top:6px; white-space:pre-wrap; word-break:break-word;">—</div>
+      </details>
+    </div>
+
+    <!-- SELFIE CAPTURE -->
+    <div class="panel">
+      <div class="panel-label" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Step 2 · Live Selfie Stream</span>
+        <button type="button" onclick="flipSelfieCamera()" style="background:transparent; border:none; color:var(--cyan); font-size:11px; cursor:pointer; font-family:'JetBrains Mono', monospace;">🔄 Flip Camera</button>
+      </div>
+      <div class="capture-box" id="selfieBox">
+        <video id="selfieWebcam" autoplay playsinline style="display:block;"></video>
+        <img id="selfiePreviewImg" style="display:none;">
+        <canvas id="selfieCanvas" style="display:none;"></canvas>
+      </div>
+
+      <button type="button" class="capture-btn" id="selfieBtn" onclick="takeLiveSelfieSnapshot()">🤳 Live Snapshot Selfie</button>
+      <input type="file" accept="image/*" id="selfieInput">
+      <label for="selfieInput" class="capture-btn secondary" style="cursor:pointer; text-align:center; display:block;">📁 Upload / Pick Selfie File</label>
+
+      <div class="status-line" style="margin-top:12px;"><span>Human Face Detected</span><span class="val" id="selfieFace">—</span></div>
+      <div class="status-line"><span>Face Detection Quality</span><span class="val" id="selfieScore">—</span></div>
+    </div>
+
+  </div>
+
+  <div class="panel verify-panel">
+    <div class="panel-label">Step 3 · Verify</div>
+    <button class="verify-btn" id="verifyBtn" disabled onclick="runVerification()">Run Verification</button>
+
+    <div class="status-line"><span>UID match with records</span><span class="val" id="r1">—</span></div>
+    <div class="status-line"><span>Baseline Profile Match</span><span class="val cyan" id="r2">—</span></div>
+
+    <div class="result-badge" id="resultBadge">AWAITING SCAN + SELFIE</div>
+  </div>
+
+  <div class="footer-note">
+    PROXYSHIELD &bull; Strict Anti-Proxy SIFT/ORB Facial Feature Matching Engine
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<script>
+function isPlausibleUid(uid){
+  return !!uid && /^([A-Za-z0-9\/_-]{4,12})$/.test(uid);
+}
+
+let cardImgEl = null, selfieImgEl = null, extractedUid = null;
+let selfieFaceResult = null, tinyLoaded = false;
+let cardStream = null, selfieStream = null;
+let cardFacingMode = 'environment', selfieFacingMode = 'user';
+
+const cardInput = document.getElementById('cardInput');
+const selfieInput = document.getElementById('selfieInput');
+const cardBtn = document.getElementById('cardBtn');
+const selfieBtn = document.getElementById('selfieBtn');
+const verifyBtn = document.getElementById('verifyBtn');
+const uidInput = document.getElementById('uidInput');
+
+// Fast Image Downscaling Helper
+function downscaleCanvas(source, maxDim = 480) {
+  const w = source.videoWidth || source.naturalWidth || source.width || 640;
+  const h = source.videoHeight || source.naturalHeight || source.height || 480;
+  const scale = Math.min(1, maxDim / Math.max(w, h));
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(w * scale);
+  canvas.height = Math.round(h * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+  return canvas;
+}
+
+// Pre-load Face Detector
+async function loadModels(){
+  if(tinyLoaded) return;
+  const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+  try {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    tinyLoaded = true;
+  } catch(err){}
+}
+
+async function detectFaceInImage(img){
+  await loadModels();
+  if(!tinyLoaded) return null;
+  const small = downscaleCanvas(img, 360);
+  try {
+    const tinyResults = await faceapi.detectAllFaces(small, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.25 }));
+    if(!tinyResults || tinyResults.length === 0) return null;
+    tinyResults.sort((a, b) => b.score - a.score);
+    return tinyResults[0];
+  } catch(err){
+    return null;
+  }
+}
+
+// Initialize WebRTC Live Cameras
+async function startSelfieCamera() {
+  const selfieVideo = document.getElementById('selfieWebcam');
+  if (selfieStream) {
+    selfieStream.getTracks().forEach(track => track.stop());
+  }
+  try {
+    selfieStream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: selfieFacingMode }
+    });
+    if (selfieVideo && selfieStream) {
+      selfieVideo.srcObject = selfieStream;
+      await selfieVideo.play();
+    }
+  } catch(e) {}
+}
+
+async function startCardCamera() {
+  const cardVideo = document.getElementById('cardWebcam');
+  if (cardStream) {
+    cardStream.getTracks().forEach(track => track.stop());
+  }
+  try {
+    cardStream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: cardFacingMode }
+    });
+    if (cardVideo && cardStream) {
+      cardVideo.srcObject = cardStream;
+      await cardVideo.play();
+    }
+  } catch(e) {}
+}
+
+function flipSelfieCamera() {
+  selfieFacingMode = selfieFacingMode === 'user' ? 'environment' : 'user';
+  const selfieVideo = document.getElementById('selfieWebcam');
+  const selfiePreviewImg = document.getElementById('selfiePreviewImg');
+  if (selfieVideo) selfieVideo.style.display = 'block';
+  if (selfiePreviewImg) selfiePreviewImg.style.display = 'none';
+  startSelfieCamera();
+}
+
+function flipCardCamera() {
+  cardFacingMode = cardFacingMode === 'user' ? 'environment' : 'user';
+  const cardVideo = document.getElementById('cardWebcam');
+  const cardPreviewImg = document.getElementById('cardPreviewImg');
+  if (cardVideo) cardVideo.style.display = 'block';
+  if (cardPreviewImg) cardPreviewImg.style.display = 'none';
+  startCardCamera();
+}
+
+async function initLiveCameras() {
+  await startSelfieCamera();
+  await startCardCamera();
+}
+
+// Live Card Snapshot
+async function takeLiveCardSnapshot() {
+  const cardVideo = document.getElementById('cardWebcam');
+  const cardPreviewImg = document.getElementById('cardPreviewImg');
+
+  if (!cardVideo || cardVideo.readyState !== cardVideo.HAVE_ENOUGH_DATA) {
+    cardInput.click();
+    return;
+  }
+
+  const smallCanvas = downscaleCanvas(cardVideo, 600);
+  const b64 = smallCanvas.toDataURL('image/jpeg', 0.85);
+
+  cardPreviewImg.src = b64;
+  cardPreviewImg.style.display = 'block';
+  cardVideo.style.display = 'none';
+
+  const img = new Image();
+  img.src = b64;
+  await new Promise(r => img.onload = r);
+  cardImgEl = img;
+
+  document.getElementById('cardCode').textContent = 'Captured Live ✓';
+  cardBtn.textContent = '🔄 Retake Live ID Photo';
+
+  const ocrStatus = document.getElementById('ocrStatus');
+  ocrStatus.textContent = 'Extracting Student ID...';
+
+  setTimeout(async () => {
+    try {
+      const res = await fetch('/api/extract_uid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_data: b64 })
+      });
+      const json = await res.json();
+      if (json.status === 'success' && json.uid) {
+        extractedUid = json.uid;
+        uidInput.value = json.uid;
+        ocrStatus.textContent = 'Found "' + json.uid + '" ✓';
+      } else {
+        ocrStatus.textContent = 'Type Student ID below';
+      }
+    } catch(e) {
+      ocrStatus.textContent = 'Type Student ID below';
+    }
+    checkReady();
+  }, 10);
+}
+
+// Live Selfie Snapshot
+async function takeLiveSelfieSnapshot() {
+  const selfieVideo = document.getElementById('selfieWebcam');
+  const selfiePreviewImg = document.getElementById('selfiePreviewImg');
+
+  if (!selfieVideo || selfieVideo.readyState !== selfieVideo.HAVE_ENOUGH_DATA) {
+    selfieInput.click();
+    return;
+  }
+
+  const smallCanvas = downscaleCanvas(selfieVideo, 600);
+  const b64 = smallCanvas.toDataURL('image/jpeg', 0.85);
+
+  selfiePreviewImg.src = b64;
+  selfiePreviewImg.style.display = 'block';
+  selfieVideo.style.display = 'none';
+
+  const img = new Image();
+  img.src = b64;
+  await new Promise(r => img.onload = r);
+  selfieImgEl = img;
+
+  selfieBtn.textContent = '🔄 Retake Live Selfie';
+  const selfieFaceEl = document.getElementById('selfieFace');
+  const selfieScoreEl = document.getElementById('selfieScore');
+
+  selfieFaceEl.textContent = 'Checking face…';
+
+  setTimeout(async () => {
+    const face = await detectFaceInImage(img);
+    selfieFaceResult = face;
+    if (face) {
+      selfieFaceEl.textContent = 'Yes ✓';
+      selfieFaceEl.className = 'val cyan';
+      selfieScoreEl.textContent = (face.score * 100).toFixed(0) + '%';
+    } else {
+      selfieFaceEl.textContent = 'No human face detected ✗';
+      selfieFaceEl.className = 'val red';
+      selfieScoreEl.textContent = '0%';
+    }
+    checkReady();
+  }, 10);
+}
+
+function fileToImage(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+cardInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const img = await fileToImage(file);
+  cardImgEl = img;
+  
+  const cardVideo = document.getElementById('cardWebcam');
+  const cardPreviewImg = document.getElementById('cardPreviewImg');
+  cardPreviewImg.src = img.src;
+  cardPreviewImg.style.display = 'block';
+  if (cardVideo) cardVideo.style.display = 'none';
+
+  document.getElementById('cardCode').textContent = 'Uploaded ✓';
+  cardBtn.textContent = '🔄 Retake Live ID Photo';
+
+  const ocrStatus = document.getElementById('ocrStatus');
+  ocrStatus.textContent = 'Extracting Student ID...';
+
+  setTimeout(async () => {
+    try {
+      const res = await fetch('/api/extract_uid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_data: img.src })
+      });
+      const json = await res.json();
+      if (json.status === 'success' && json.uid) {
+        extractedUid = json.uid;
+        uidInput.value = json.uid;
+        ocrStatus.textContent = 'Found "' + json.uid + '" ✓';
+      } else {
+        ocrStatus.textContent = 'Type Student ID below';
+      }
+    } catch(err) {
+      ocrStatus.textContent = 'Type Student ID below';
+    }
+    checkReady();
+  }, 10);
+});
+
+uidInput.addEventListener('input', (e) => {
+  extractedUid = e.target.value.trim();
+  checkReady();
+});
+
+selfieInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const img = await fileToImage(file);
+  selfieImgEl = img;
+  
+  const selfieVideo = document.getElementById('selfieWebcam');
+  const selfiePreviewImg = document.getElementById('selfiePreviewImg');
+  selfiePreviewImg.src = img.src;
+  selfiePreviewImg.style.display = 'block';
+  if (selfieVideo) selfieVideo.style.display = 'none';
+
+  selfieBtn.textContent = '🔄 Retake Live Selfie';
+  const selfieFaceEl = document.getElementById('selfieFace');
+  const selfieScoreEl = document.getElementById('selfieScore');
+
+  selfieFaceEl.textContent = 'Checking face…';
+
+  setTimeout(async () => {
+    const face = await detectFaceInImage(img);
+    selfieFaceResult = face;
+    if (face) {
+      selfieFaceEl.textContent = 'Yes ✓';
+      selfieFaceEl.className = 'val cyan';
+      selfieScoreEl.textContent = (face.score * 100).toFixed(0) + '%';
+    } else {
+      selfieFaceEl.textContent = 'No human face detected ✗';
+      selfieFaceEl.className = 'val red';
+      selfieScoreEl.textContent = '0%';
+    }
+    checkReady();
+  }, 10);
+});
+
+function checkReady(){
+  verifyBtn.disabled = !(cardImgEl && selfieImgEl && extractedUid);
+}
+
+// Strict Anti-Proxy Face Verification Execution
+async function runVerification(){
+  verifyBtn.disabled = true;
+  try {
+    const r1 = document.getElementById('r1');
+    const r2 = document.getElementById('r2');
+    const badge = document.getElementById('resultBadge');
+
+    const uidOk = isPlausibleUid(extractedUid);
+    r1.textContent = uidOk ? extractedUid + ' — Read successfully ✓' : (extractedUid ? extractedUid + ' — Invalid format ✗' : 'No UID read ✗');
+    r1.className = 'val ' + (uidOk ? 'cyan' : 'red');
+
+    // Strict Check 1: If No Student ID
+    if (!uidOk) {
+      r2.textContent = 'Student ID missing or invalid format ✗';
+      r2.className = 'val red';
+      badge.className = 'result-badge fail';
+      badge.innerHTML = 'NOT VERIFIED (PROXY ALERT)<div class="sub-msg">Student ID (UID) is missing or invalid format!</div>';
+      return;
+    }
+
+    // Strict Check 2: If No Human Face Detected in Selfie
+    if (!selfieFaceResult) {
+      r2.textContent = 'No human face detected in selfie ✗';
+      r2.className = 'val red';
+      badge.className = 'result-badge fail';
+      badge.innerHTML = 'NOT VERIFIED (PROXY ALERT)<div class="sub-msg">PROXY ALERT — No human face detected in the live selfie photo! Please look at the camera clearly.</div>';
+      
+      try {
+        fetch('/api/mark_attendance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: extractedUid,
+            verified: false,
+            captured_image_data: selfieImgEl ? selfieImgEl.src : null,
+            verification_note: 'PROXY ALERT — No human face detected in live selfie photo!'
+          })
+        });
+      } catch(e){}
+      return;
+    }
+
+    r2.textContent = 'Comparing live selfie face with enrolled profile in DB…';
+
+    const res = await fetch('/api/verify_and_mark_attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: extractedUid,
+        live_face_data: selfieImgEl ? selfieImgEl.src : null
+      })
+    });
+    const json = await res.json();
+
+    if (json.verified) {
+      r2.textContent = 'MATCH (' + json.match_score + '% Facial Feature Similarity) — Enrolled Profile Verified ✓';
+      r2.className = 'val cyan';
+      badge.className = 'result-badge match';
+      badge.innerHTML = 'VERIFIED · ATTENDANCE MARKED<div class="sub-msg">' + json.message + '</div>';
+    } else {
+      r2.textContent = 'FACE MISMATCH / PROXY ALERT (Sim: ' + json.match_score + '%) ✗';
+      r2.className = 'val red';
+      badge.className = 'result-badge fail';
+      badge.innerHTML = 'NOT VERIFIED (PROXY ALERT)<div class="sub-msg">' + json.message + '</div>';
+    }
+
+  } catch(fatalErr){
+    const badge = document.getElementById('resultBadge');
+    badge.className = 'result-badge fail';
+    badge.innerHTML = 'SOMETHING WENT WRONG<div class="sub-msg">' + (fatalErr.message || fatalErr) + ' — please try again</div>';
+  } finally {
+    verifyBtn.disabled = false;
+  }
+}
+
+// --- Theme Switcher Logic ---
+function initTheme() {
+    const savedTheme = localStorage.getItem('ps_theme') || 'light';
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    if (theme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('ps_theme', 'dark');
+        const icon = document.getElementById('themeIcon');
+        const text = document.getElementById('themeText');
+        if (icon) icon.textContent = '🌙';
+        if (text) text.textContent = 'Dark';
+    } else {
+        document.body.removeAttribute('data-theme');
+        localStorage.setItem('ps_theme', 'light');
+        const icon = document.getElementById('themeIcon');
+        const text = document.getElementById('themeText');
+        if (icon) icon.textContent = '☀️';
+        if (text) text.textContent = 'Light';
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.hasAttribute('data-theme');
+    setTheme(isDark ? 'light' : 'dark');
+}
+
+// Initialize Theme immediately
+initTheme();
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadModels();
+  initLiveCameras();
+});
+</script>
+
+</body>
+</html>
