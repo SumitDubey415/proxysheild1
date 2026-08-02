@@ -315,6 +315,7 @@ def api_mark_attendance(data: MarkAttendanceRequest):
 class VerifyStudentRequest(BaseModel):
     uid: str
     live_face_data: Optional[str] = None
+    selfie_image_base64: Optional[str] = None
 
 @app.post("/api/verify_and_mark_attendance")
 def api_verify_and_mark_attendance(data: VerifyStudentRequest):
@@ -343,8 +344,9 @@ def api_verify_and_mark_attendance(data: VerifyStudentRequest):
         scan_timestamp = start_time.strftime("%Y-%m-%d %H:%M:%S")
 
         captured_img_path = ""
-        if data.live_face_data:
-            img_str = data.live_face_data
+        face_b64 = data.live_face_data or data.selfie_image_base64
+        if face_b64:
+            img_str = face_b64
             if "," in img_str:
                 img_str = img_str.split(",")[1]
             img_bytes = base64.b64decode(img_str)

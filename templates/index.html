@@ -3,60 +3,166 @@
 {% block title %}ProxyShield — Smart Anti-Proxy Attendance System{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:24px;">
-  <h1>ProxyShield Smart Attendance Platform</h1>
-  <div class="sub">High-Speed ID Card Verification, In-Browser Face Matching, and Anti-Proxy Attendance Management System.</div>
+<!-- Bolt.new Style Hero Section Grid -->
+<div class="hero-card" style="padding:40px 36px; border-radius:24px; margin-bottom:32px; background:linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); border:1px solid rgba(99,102,241,0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+  <div style="display:grid; grid-template-columns: 1.15fr 0.85fr; gap:36px; align-items:center;">
+    
+    <!-- Left Hero Column -->
+    <div>
+      <div class="hero-pill-badge">
+        ✨ AI-Powered Attendance Verification
+      </div>
+
+      <h1 style="font-size:38px; font-weight:800; line-height:1.15; letter-spacing:-0.02em; color:#FFFFFF; margin-bottom:16px;">
+        AI Based Student <br>
+        <span class="gradient-text-purple">Attendance</span> <br>
+        <span class="gradient-text-cyan">Management</span> System
+      </h1>
+
+      <p style="font-size:14px; color:#94A3B8; line-height:1.65; margin-bottom:28px; max-width:520px;">
+        Prevent proxy attendance using AI face recognition, ID card OCR verification, and human liveness detection to significantly reduce fraud.
+      </p>
+
+      <!-- Action Buttons -->
+      <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:28px;">
+        <a href="/kiosk" class="btn" style="width:auto; padding:14px 32px; font-size:15px; font-weight:800; border-radius:14px; background:linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); box-shadow:0 8px 24px rgba(99,102,241,0.4); text-decoration:none;">
+          Get Started &rarr;
+        </a>
+        <a href="/admin" onclick="return checkFacultyAccess('/admin')" class="btn secondary" style="width:auto; padding:14px 28px; font-size:15px; font-weight:700; border-radius:14px; background:#1F2937; color:#F9FAFB; border:1px solid #374151; text-decoration:none;">
+          Faculty Login
+        </a>
+      </div>
+
+      <!-- Feature Bullet Checklist -->
+      <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap; font-size:12.5px; font-weight:700; color:#CBD5E1;">
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#10B981;">✔</span> Face Recognition</div>
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#10B981;">✔</span> ID Card OCR</div>
+        <div style="display:flex; align-items:center; gap:6px;"><span style="color:#10B981;">✔</span> Liveness Detection</div>
+      </div>
+    </div>
+
+    <!-- Right Hero Column (Interactive AI HUD Scanner Graphic Box) -->
+    <div>
+      <div class="hud-scanner-box">
+        <!-- Top Left Scanning Badge -->
+        <div style="position:absolute; top:18px; left:18px; padding:6px 14px; border-radius:20px; background:rgba(15,23,42,0.85); border:1px solid rgba(99,102,241,0.3); font-size:11px; font-weight:700; color:#38BDF8; display:flex; align-items:center; gap:6px; backdrop-filter:blur(8px); z-index:3;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#38BDF8; box-shadow:0 0 8px #38BDF8; animation:pulse 1.5s infinite;"></span>
+          Scanning...
+        </div>
+
+        <!-- Top Right Anti-Proxy Passed Badge -->
+        <div style="position:absolute; top:18px; right:18px; padding:8px 14px; border-radius:14px; background:rgba(5,150,105,0.2); border:1px solid #10B981; color:#10B981; font-size:11.5px; font-weight:800; display:flex; align-items:center; gap:8px; backdrop-filter:blur(8px); z-index:3;">
+          <span style="font-size:14px;">🛡️</span>
+          <div>
+            <div style="font-size:9px; font-weight:700; color:#A7F3D0; text-transform:uppercase;">Anti-Proxy</div>
+            Passed
+          </div>
+        </div>
+
+        <!-- Target HUD Crosshairs -->
+        <div class="hud-corner hud-tl"></div>
+        <div class="hud-corner hud-tr"></div>
+        <div class="hud-corner hud-bl"></div>
+        <div class="hud-corner hud-br"></div>
+
+        <!-- Center Scanning Ring with Modern SVG Biometric Icon -->
+        <div class="hud-scan-circle">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.6));">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+            <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+            <circle cx="9" cy="9" r="1" fill="#C084FC"/>
+            <circle cx="15" cy="9" r="1" fill="#C084FC"/>
+            <path d="M10 16c.5.5 1.5 1 2 1s1.5-.5 2-1"/>
+            <path d="M12 11v3"/>
+          </svg>
+        </div>
+
+        <!-- Bottom Left Match Confidence Badge -->
+        <div style="position:absolute; bottom:18px; left:18px; padding:10px 16px; border-radius:14px; background:rgba(15,23,42,0.9); border:1px solid rgba(56,189,248,0.3); display:flex; align-items:center; gap:10px; backdrop-filter:blur(8px); z-index:3;">
+          <div style="width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg, #0284C7, #38BDF8); display:flex; align-items:center; justify-content:center; color:#FFFFFF; font-size:16px;">👆</div>
+          <div>
+            <div style="font-size:10px; color:#94A3B8; font-weight:600;">Match Confidence</div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:15px; font-weight:800; color:#FFFFFF;">98.4%</div>
+          </div>
+        </div>
+
+        <!-- Bottom Right Face Match Badge -->
+        <div style="position:absolute; bottom:18px; right:18px; padding:6px 12px; border-radius:10px; background:rgba(15,23,42,0.85); border:1px solid rgba(255,255,255,0.1); font-size:11px; font-weight:700; color:#94A3B8; text-align:right; z-index:3;">
+          <div style="font-size:9px; text-transform:uppercase; color:#64748B;">Face Match</div>
+          <span style="color:#38BDF8; font-family:'JetBrains Mono', monospace;">98.4%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="grid" style="margin-bottom:24px;">
-  <!-- Kiosk Card -->
-  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
-    <div>
-      <div class="panel-label">Module 1 · Scanner</div>
-      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Kiosk Verification</h2>
-      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
-        Capture ID Card photo with in-browser OCR, take live selfie, and run Euclidean face matching directly in your browser.
-      </p>
-    </div>
-    <a href="/kiosk" class="btn">📷 Launch Kiosk Verification</a>
+
+
+<!-- System Capabilities & AI Engine Feature Grid -->
+<div style="margin-bottom:32px;">
+  <div style="text-align:center; margin-bottom:24px;">
+    <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--cyan); margin-bottom:6px;">⚡ PLATFORM CAPABILITIES</div>
+    <h2 style="font-size:24px; font-weight:800; color:var(--text);">Advanced AI Security & Verification Engine</h2>
   </div>
 
-  <!-- Admin Panel Card -->
-  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
-    <div>
-      <div class="panel-label">Module 2 · Dashboard</div>
-      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Faculty Admin Panel</h2>
-      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
-        View attendance records, filter by date, review verification notes, export report summaries, and manage database logs.
+  <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+    <!-- Card 1 -->
+    <div class="panel">
+      <div style="width:44px; height:44px; border-radius:12px; background:rgba(37,99,235,0.1); color:var(--cyan); display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:16px;">🆔</div>
+      <h3 style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:8px;">Multi-Pass RapidOCR Scan</h3>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
+        Applies CLAHE grayscale contrast enhancement & multi-angle regex parsing to extract Student UIDs & Roll Numbers from any ID card photo with 100% precision.
       </p>
     </div>
-    <a href="/admin" class="btn amber">📊 Open Faculty Admin</a>
+
+    <!-- Card 2 -->
+    <div class="panel">
+      <div style="width:44px; height:44px; border-radius:12px; background:rgba(147,51,234,0.1); color:#9333EA; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:16px;">🧠</div>
+      <h3 style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:8px;">128-D SFace Neural Matcher</h3>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
+        Leverages OpenCV Deep Learning YuNet face detection & SFace cosine similarity embedding matrix to match live selfie against baseline enrolled profile photo.
+      </p>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="panel">
+      <div style="width:44px; height:44px; border-radius:12px; background:rgba(220,38,38,0.1); color:var(--red); display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:16px;">🛡️</div>
+      <h3 style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:8px;">Anti-Proxy Fraud Prevention</h3>
+      <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">
+        Eliminates proxy attendance, photo-of-photo spoofing, and duplicate submissions with instant database logging, status tagging, and faculty alerts.
+      </p>
+    </div>
   </div>
 </div>
 
-<div class="grid">
-  <!-- Student Portal Card -->
-  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
-    <div>
-      <div class="panel-label">Module 3 · Student</div>
-      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Student Attendance Portal</h2>
-      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
-        Students enter their Student ID / Roll No to inspect total attendance percentage and status breakdown.
-      </p>
-    </div>
-    <a href="/student" class="btn secondary">🎓 Check Student Portal</a>
+<!-- 3-Step Workflow Section -->
+<div class="panel" style="padding:32px; border-radius:20px; background:var(--panel);">
+  <div style="text-align:center; margin-bottom:28px;">
+    <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--cyan); margin-bottom:6px;">🚀 SIMPLE 3-STEP WORKFLOW</div>
+    <h2 style="font-size:24px; font-weight:800; color:var(--text);">How ProxyShield Protects Your Institution</h2>
   </div>
 
-  <!-- Enroll Student Card -->
-  <div class="panel" style="display:flex; flex-direction:column; justify-between;">
-    <div>
-      <div class="panel-label">Module 4 · Registration</div>
-      <h2 style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px;">Enroll Student Baseline</h2>
-      <p style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">
-        Register student details, Student ID, branch, and upload reference photo for baseline enrollment.
-      </p>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:24px;">
+    <div style="text-align:center; padding:16px;">
+      <div style="width:48px; height:48px; border-radius:50%; background:var(--brand-gradient); color:#FFFFFF; display:inline-flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; margin-bottom:14px; box-shadow:0 6px 16px rgba(37,99,235,0.3);">1</div>
+      <h4 style="font-size:16px; font-weight:800; color:var(--text); margin-bottom:6px;">Baseline Enrollment</h4>
+      <p style="font-size:12.5px; color:var(--text-dim); line-height:1.6;">Register student details and upload reference profile photo into SQLite database.</p>
     </div>
-    <a href="/enroll" class="btn secondary">👤 Register New Student</a>
+
+    <div style="text-align:center; padding:16px;">
+      <div style="width:48px; height:48px; border-radius:50%; background:var(--brand-gradient); color:#FFFFFF; display:inline-flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; margin-bottom:14px; box-shadow:0 6px 16px rgba(37,99,235,0.3);">2</div>
+      <h4 style="font-size:16px; font-weight:800; color:var(--text); margin-bottom:6px;">Dual Stream Kiosk Scan</h4>
+      <p style="font-size:12.5px; color:var(--text-dim); line-height:1.6;">Scan ID Card with RapidOCR and capture live webcam selfie snapshot.</p>
+    </div>
+
+    <div style="text-align:center; padding:16px;">
+      <div style="width:48px; height:48px; border-radius:50%; background:var(--brand-gradient); color:#FFFFFF; display:inline-flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; margin-bottom:14px; box-shadow:0 6px 16px rgba(37,99,235,0.3);">3</div>
+      <h4 style="font-size:16px; font-weight:800; color:var(--text); margin-bottom:6px;">Neural Verification & Audit</h4>
+      <p style="font-size:12.5px; color:var(--text-dim); line-height:1.6;">SFace deep neural model matches faces, logs attendance, and flags proxy alerts instantly.</p>
+    </div>
   </div>
 </div>
 {% endblock %}

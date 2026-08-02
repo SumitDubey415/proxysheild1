@@ -437,8 +437,8 @@ def perform_single_frame_verification(image_path, student_uid, date_str, databas
 
 def extract_uid_from_id_card(image_path):
     """
-    Dual QR Code & Barcode Scanner Engine:
-    Detects & decodes QR codes / Barcodes directly from ID Card frame using OpenCV QRCodeDetector & RapidOCR.
+    Enhanced Multi-Pass QR / Barcode & RapidOCR Extraction Engine:
+    Applies multi-pass contrast enhancement, CLAHE & adaptive binarization, then parses text with regex & DB baseline cross-validation.
     Returns: (extracted_uid, note_details)
     """
     if not os.path.exists(image_path):
@@ -452,54 +452,88 @@ def extract_uid_from_id_card(image_path):
         # 1. OpenCV QR Code Detector (Fast 10ms Decode)
         qr_detector = cv2.QRCodeDetector()
         qr_data, bbox, _ = qr_detector.detectAndDecode(img)
-        
         if not qr_data:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             qr_data, bbox, _ = qr_detector.detectAndDecode(gray)
 
         if qr_data:
-            digits = re.findall(r'(\d{5,10})', qr_data)
+            digits = re.findall(r'(\d{4,10})', qr_data)
             if digits:
                 return digits[0], f"Scanned QR Code Student ID: {digits[0]}"
             alphanumeric = re.findall(r'\b([A-Z0-9]{4,10})\b', qr_data.upper())
             if alphanumeric:
                 return alphanumeric[0], f"Scanned QR Code Payload: {alphanumeric[0]}"
 
-        # 2. RapidOCR ONNX Fallback
+        # 2. Multi-Pass RapidOCR Extraction
         raw_texts = []
         if HAS_RAPIDOCR and rapid_ocr_engine is not None:
+            # Pass 1: Original Image
             try:
                 ocr_res, _ = rapid_ocr_engine(image_path)
                 if ocr_res:
                     for line in ocr_res:
                         if len(line) >= 2 and isinstance(line[1], str):
                             raw_texts.append(line[1])
-            except Exception as ocr_err:
-                print(f"[RapidOCR Notice] {ocr_err}")
+            except Exception:
+                pass
+
+            # Pass 2: Enhanced Contrast / CLAHE if Pass 1 gave few results
+            if len(raw_texts) < 2:
+                try:
+                    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+                    enhanced = clahe.apply(gray)
+                    temp_enhanced_path = os.path.join(os.path.dirname(image_path), f"temp_enh_{os.path.basename(image_path)}")
+                    cv2.imwrite(temp_enhanced_path, enhanced)
+                    ocr_res2, _ = rapid_ocr_engine(temp_enhanced_path)
+                    if ocr_res2:
+                        for line in ocr_res2:
+                            if len(line) >= 2 and isinstance(line[1], str):
+                                raw_texts.append(line[1])
+                    if os.path.exists(temp_enhanced_path):
+                        os.remove(temp_enhanced_path)
+                except Exception:
+                    pass
 
         full_text = " ".join(raw_texts).upper()
 
+        # Check DB for direct enrolled student UID / Roll No match in text
+        try:
+            import database
+            students = database.get_all_students()
+            for s in students:
+                s_uid = str(s.get('uid', '')).strip().upper()
+                s_roll = str(s.get('roll_no', '')).strip().upper()
+                if s_uid and len(s_uid) >= 3 and s_uid in full_text:
+                    return s_uid, f"Extracted Student ID (DB Match): {s_uid}"
+                if s_roll and len(s_roll) >= 3 and s_roll in full_text:
+                    return s_uid, f"Extracted Student Roll No (DB Match): {s_uid}"
+        except Exception:
+            pass
+
         patterns = [
-            r'STUDENT\s*ID\s*:?\s*(\d{5,10})',
+            r'STUDENT\s*ID\s*:?\s*(\d{4,10})',
             r'STUDENT\s*ID\s*:?\s*([A-Z0-9]{4,10})',
-            r'UID\s*:?\s*(\d{5,10})',
+            r'UID\s*:?\s*(\d{4,10})',
             r'CLASS\s*NO\s*:?\s*([A-Z0-9/_-]{4,10})',
             r'ROLL\s*NO\s*:?\s*([A-Z0-9/_-]{4,10})',
-            r'\b(725101)\b',
+            r'\b(725\d{3})\b',
             r'\b(7\d{5})\b',
-            r'\b(\d{6,10})\b',
+            r'\b(\d{5,10})\b',
             r'\b([A-Z]{2,4}\d{3,6})\b',
-            r'\b([A-Z0-9]{5,10})\b'
+            r'\b([A-Z0-9]{4,10})\b'
         ]
+
+        ignored_words = {"STUDENT", "COLLEGE", "IDENTITY", "CARD", "BRANCH", "NATIONAL", "LUCKNOW", "SESSION", "PROCTOR", "UNIVERSITY", "INSTITUTE", "SIGNATURE", "VALIDITY"}
 
         for pat in patterns:
             matches = re.findall(pat, full_text)
             for m in matches:
                 clean_m = m.replace(" ", "").replace("-", "").strip()
-                if len(clean_m) >= 4 and clean_m not in ("STUDENT", "COLLEGE", "IDENTITY", "CARD", "BRANCH", "NATIONAL", "LUCKNOW", "SESSION", "PROCTOR"):
+                if len(clean_m) >= 4 and clean_m not in ignored_words:
                     return clean_m, f"Extracted Student ID: {clean_m}"
 
-        return None, "No QR Code / Barcode detected. Align QR code to camera or enter Student ID in fallback box."
+        return None, "No QR Code or clear Student ID detected in frame. Enter Student ID manually or try another snapshot."
 
     except Exception as e:
         print(f"[QR/OCR Exception] {e}")

@@ -3,9 +3,11 @@
 {% block title %}ProxyShield — Student Attendance Portal{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:24px;">
+<!-- Bolt.new Style Hero Banner -->
+<div class="hero-card">
+    <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--cyan); margin-bottom:4px;">👨‍🎓 ACADEMIC PORTAL</div>
     <h1>Student Attendance Portal</h1>
-    <div class="sub">Enter your Student ID / Roll No to inspect attendance history and eligibility standing.</div>
+    <p style="margin-bottom:0;">Enter your Student ID / Roll No to inspect personal attendance history, session logs, and exam eligibility standing.</p>
 </div>
 
 <!-- Search Input Box -->
@@ -13,7 +15,7 @@
     <div class="panel-label">Student ID Lookup</div>
     <form id="studentSearchForm" style="display:flex; gap:12px; flex-wrap:wrap;">
         <input type="text" id="studentUidInput" required placeholder="Enter Student ID (e.g. 725101)..." style="flex:1; min-width:200px;">
-        <button type="submit" class="btn" style="width:auto; padding:11px 20px; font-size:13.5px;">Check Attendance</button>
+        <button type="submit" class="btn" style="width:auto; padding:12px 24px; font-size:14px;">Check Attendance</button>
     </form>
 </div>
 
@@ -34,31 +36,31 @@
     </div>
 
     <!-- Profile & Metrics Grid -->
-    <div class="panel">
+    <div class="panel" style="margin-bottom:24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
             <div>
                 <div class="panel-label">Student Record</div>
-                <h2 id="studentName" style="font-size:22px; font-weight:700; color:var(--text);">Student Name</h2>
-                <div style="font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:4px;">
+                <h2 id="studentName" style="font-size:22px; font-weight:800; color:var(--text);">Student Name</h2>
+                <div style="font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:6px;">
                     <span id="studentUidBadge" class="tag cyan">UID: 725101</span> &bull; <span id="studentBranchBadge">Branch</span>
                 </div>
             </div>
             
             <div style="text-align:right;">
                 <div class="panel-label">Attendance Score</div>
-                <div id="percentageValue" style="font-family:'JetBrains Mono', monospace; font-size:32px; font-weight:800; color:var(--cyan);">0%</div>
+                <div id="percentageValue" style="font-family:'JetBrains Mono', monospace; font-size:36px; font-weight:800; color:var(--cyan);">0%</div>
             </div>
         </div>
         
-        <div class="status-line" style="margin-top:16px;"><span>Total Sessions</span><span class="val" id="countTotal">0</span></div>
+        <div class="status-line" style="margin-top:20px;"><span>Total Sessions</span><span class="val" id="countTotal">0</span></div>
         <div class="status-line"><span>Present Sessions</span><span class="val cyan" id="countPresent">0</span></div>
         <div class="status-line"><span>Absent / Flagged</span><span class="val red" id="countAbsent">0</span></div>
     </div>
 
     <!-- Attendance History Table -->
     <div class="panel" style="padding:0; overflow:hidden;">
-        <div class="panel-label" style="padding:16px 16px 0 16px;">Scan History Logs</div>
-        <div class="table-container">
+        <div class="panel-label" style="padding:18px 22px; margin-bottom:0; border-bottom:1px solid var(--line);">Scan History Logs</div>
+        <div class="table-container" style="margin-top:0; border:none; border-radius:0;">
             <table>
                 <thead>
                     <tr>

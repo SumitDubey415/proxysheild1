@@ -3,41 +3,58 @@
 {% block title %}ProxyShield — Faculty Admin Dashboard{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+<!-- Bolt.new Style Hero Banner -->
+<div class="hero-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
     <div>
+        <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--cyan); margin-bottom:4px;">📊 ANALYTICS & LOGS</div>
         <h1>Faculty Admin Dashboard</h1>
-        <div class="sub" style="margin-bottom:0;">Review live verification logs, proxy alerts, and export attendance records.</div>
+        <p style="margin-bottom:0;">Review live verification logs, proxy security alerts, and export official attendance reports.</p>
     </div>
     
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button onclick="clearAllAttendanceLogs()" class="btn red" style="width:auto; padding:10px 14px; font-size:12.5px;">Clear Logs</button>
-        <a href="/api/reports/pdf" target="_blank" class="btn secondary" style="width:auto; padding:10px 14px; font-size:12.5px;">PDF Report</a>
-        <a href="/api/reports/excel" target="_blank" class="btn secondary" style="width:auto; padding:10px 14px; font-size:12.5px;">Excel Report</a>
+        <button onclick="clearAllAttendanceLogs()" class="btn red" style="width:auto; padding:10px 16px; font-size:13px; font-weight:700;">Clear Logs</button>
+        <a href="/api/reports/pdf" target="_blank" class="btn secondary" style="width:auto; padding:10px 16px; font-size:13px; font-weight:700;">PDF Report</a>
+        <a href="/api/reports/excel" target="_blank" class="btn secondary" style="width:auto; padding:10px 16px; font-size:13px; font-weight:700;">Excel Report</a>
     </div>
 </div>
 
-<!-- Stats Grid -->
-<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:20px;">
-    <div class="panel" style="padding:16px;">
-        <div class="panel-label">Total Verifications</div>
-        <div id="statTotal" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--text);">0</div>
+<!-- Bolt.new Style Metric Stats Grid -->
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:16px; margin-bottom:24px;">
+    <div class="panel" style="padding:20px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <div class="panel-label" style="margin-bottom:6px;">Total Verifications</div>
+            <div id="statTotal" style="font-family:'JetBrains Mono', monospace; font-size:28px; font-weight:800; color:var(--text);">0</div>
+        </div>
+        <div style="width:44px; height:44px; border-radius:12px; background:rgba(37,99,235,0.1); color:var(--cyan); display:flex; align-items:center; justify-content:center; font-size:20px;">👥</div>
     </div>
-    <div class="panel" style="padding:16px;">
-        <div class="panel-label">Verified Present</div>
-        <div id="statPresent" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--cyan);">0</div>
+
+    <div class="panel" style="padding:20px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <div class="panel-label" style="margin-bottom:6px;">Verified Present</div>
+            <div id="statPresent" style="font-family:'JetBrains Mono', monospace; font-size:28px; font-weight:800; color:var(--emerald);">0</div>
+        </div>
+        <div style="width:44px; height:44px; border-radius:12px; background:rgba(5,150,105,0.1); color:var(--emerald); display:flex; align-items:center; justify-content:center; font-size:20px;">✅</div>
     </div>
-    <div class="panel" style="padding:16px;">
-        <div class="panel-label">Proxy Alerts</div>
-        <div id="statProxy" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--amber);">0</div>
+
+    <div class="panel" style="padding:20px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <div class="panel-label" style="margin-bottom:6px;">Proxy Alerts</div>
+            <div id="statProxy" style="font-family:'JetBrains Mono', monospace; font-size:28px; font-weight:800; color:var(--amber);">0</div>
+        </div>
+        <div style="width:44px; height:44px; border-radius:12px; background:rgba(217,119,6,0.1); color:var(--amber); display:flex; align-items:center; justify-content:center; font-size:20px;">🛡️</div>
     </div>
-    <div class="panel" style="padding:16px;">
-        <div class="panel-label">No Face / Absent</div>
-        <div id="statNoFace" style="font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--red);">0</div>
+
+    <div class="panel" style="padding:20px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+            <div class="panel-label" style="margin-bottom:6px;">No Face / Absent</div>
+            <div id="statNoFace" style="font-family:'JetBrains Mono', monospace; font-size:28px; font-weight:800; color:var(--red);">0</div>
+        </div>
+        <div style="width:44px; height:44px; border-radius:12px; background:rgba(220,38,38,0.1); color:var(--red); display:flex; align-items:center; justify-content:center; font-size:20px;">❌</div>
     </div>
 </div>
 
 <!-- Filter Control Bar -->
-<div class="panel" style="margin-bottom:20px; padding:16px;">
+<div class="panel" style="margin-bottom:24px; padding:18px;">
     <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
         <div style="display:flex; flex-wrap:wrap; gap:10px; flex:1;">
             <input type="date" id="filterDate" onchange="fetchAdminAttendance()" style="width:auto; min-width:160px;">
@@ -56,13 +73,13 @@
             </select>
             <input type="text" id="filterSearch" placeholder="Search Name or UID..." onkeyup="fetchAdminAttendance()" style="width:auto; min-width:200px;">
         </div>
-        <button onclick="fetchAdminAttendance()" class="btn" style="width:auto; padding:10px 16px; font-size:13px;">Refresh Table</button>
+        <button onclick="fetchAdminAttendance()" class="btn" style="width:auto; padding:10px 18px; font-size:13px;">Refresh Table</button>
     </div>
 </div>
 
 <!-- Table View Panel -->
 <div class="panel" style="padding:0; overflow:hidden;">
-    <div class="table-container">
+    <div class="table-container" style="margin-top:0; border:none; border-radius:0;">
         <table>
             <thead>
                 <tr>

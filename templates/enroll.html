@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}ProxyShield — Student Enrollment{% endblock %}
+{% block title %}ProxyShield — Student Baseline Enrollment{% endblock %}
 
 {% block content %}
-<div style="margin-bottom:24px;">
+<!-- Bolt.new Style Hero Banner -->
+<div class="hero-card">
+    <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--cyan); margin-bottom:4px;">📝 BASELINE REGISTRATION</div>
     <h1>Student Baseline Enrollment</h1>
-    <div class="sub">Register student details and upload reference profile photo for database baseline matching.</div>
+    <p style="margin-bottom:0;">Register student profile details and capture high-resolution baseline reference photo for facial verification database.</p>
 </div>
 
 <!-- Alert Box -->
@@ -17,17 +19,17 @@
         <div class="panel-label">Step 1 · Student Information</div>
         <form id="enrollForm" style="display:flex; flex-direction:column; gap:14px;">
             <div>
-                <label style="font-size:12px; color:var(--text-dim); display:block; margin-bottom:6px;">Student Full Name *</label>
+                <label style="font-size:12px; font-weight:600; color:var(--text-dim); display:block; margin-bottom:6px;">Student Full Name *</label>
                 <input type="text" id="name" name="name" required placeholder="e.g. Sumit Dubey">
             </div>
 
             <div>
-                <label style="font-size:12px; color:var(--text-dim); display:block; margin-bottom:6px;">Student ID / Roll No *</label>
+                <label style="font-size:12px; font-weight:600; color:var(--text-dim); display:block; margin-bottom:6px;">Student ID / Roll No *</label>
                 <input type="text" id="uid" name="uid" required placeholder="e.g. 725101">
             </div>
 
             <div>
-                <label style="font-size:12px; color:var(--text-dim); display:block; margin-bottom:6px;">Branch / Program *</label>
+                <label style="font-size:12px; font-weight:600; color:var(--text-dim); display:block; margin-bottom:6px;">Branch / Program *</label>
                 <select id="branch" name="branch" required>
                     <option value="Computer Science">Computer Science (BCA / CSE)</option>
                     <option value="Information Tech">Information Technology (IT)</option>
@@ -47,9 +49,9 @@
         <div>
             <div class="panel-label" style="display:flex; justify-content:space-between; align-items:center;">
                 <span>Step 2 · Profile Photo</span>
-                <button type="button" onclick="flipEnrollCamera()" style="background:transparent; border:none; color:var(--cyan); font-size:11px; cursor:pointer; font-family:'JetBrains Mono', monospace;">🔄 Flip Camera</button>
+                <button type="button" onclick="flipEnrollCamera()" style="background:transparent; border:none; color:var(--cyan); font-size:11.5px; cursor:pointer; font-family:'JetBrains Mono', monospace; font-weight:700;">🔄 Flip Camera</button>
             </div>
-            <div class="capture-box" id="enrollCameraContainer" style="height:210px; overflow:hidden; position:relative; margin-bottom:16px;">
+            <div class="capture-box" id="enrollCameraContainer" style="height:220px; border-radius:14px; border:1.5px dashed var(--line); background:var(--cam-bg); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; margin-bottom:16px;">
                 <video id="enrollWebcam" autoplay playsinline style="width:100%; height:100%; object-fit:cover; display:block;"></video>
                 <img id="enrollPhotoPreview" style="display:none; width:100%; height:100%; object-fit:cover;">
                 <canvas id="enrollCanvas" style="display:none;"></canvas>
@@ -66,12 +68,12 @@
 
 <!-- Enrolled Students Registry Panel -->
 <div class="panel" style="margin-top:24px; padding:0; overflow:hidden;">
-    <div style="padding:16px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
+    <div style="padding:18px 22px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
         <div class="panel-label" style="margin-bottom:0;">Registered Student Baseline Database</div>
-        <button onclick="fetchEnrolledStudents()" class="btn secondary" style="width:auto; padding:6px 12px; font-size:12px; cursor:pointer;">🔄 Refresh List</button>
+        <button onclick="fetchEnrolledStudents()" class="btn secondary" style="width:auto; padding:7px 14px; font-size:12px; cursor:pointer;">🔄 Refresh List</button>
     </div>
     
-    <div class="table-container">
+    <div class="table-container" style="margin-top:0; border:none; border-radius:0;">
         <table>
             <thead>
                 <tr>
@@ -92,29 +94,29 @@
 </div>
 
 <!-- Edit Student Modal -->
-<div id="editStudentModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(10,14,18,0.92); backdrop-filter:blur(8px); align-items:center; justify-content:center; z-index:9999;">
-  <div class="panel" style="width:100%; max-width:440px; padding:28px; border:1px solid var(--line); box-shadow:0 12px 40px rgba(0,0,0,0.6);">
-    <div class="panel-label" style="margin-bottom:12px;">Edit Student Profile</div>
-    <form id="editStudentForm" style="display:flex; flex-direction:column; gap:12px;">
+<div id="editStudentModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--modal-bg); backdrop-filter:blur(10px); align-items:center; justify-content:center; z-index:9999;">
+  <div class="panel" style="width:100%; max-width:440px; padding:32px; border:1px solid var(--line); border-radius:20px; box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+    <div class="panel-label" style="margin-bottom:14px; font-size:13px; color:var(--text);">Edit Student Profile</div>
+    <form id="editStudentForm" style="display:flex; flex-direction:column; gap:14px;">
         <input type="hidden" id="editUid">
         <div>
-            <label style="font-size:11px; color:var(--text-dim); display:block; margin-bottom:4px;">Student Name</label>
-            <input type="text" id="editName" required style="width:100%; padding:9px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);">
+            <label style="font-size:12px; font-weight:600; color:var(--text-dim); display:block; margin-bottom:4px;">Student Name</label>
+            <input type="text" id="editName" required style="width:100%; padding:11px 14px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; color:var(--text);">
         </div>
         <div>
-            <label style="font-size:11px; color:var(--text-dim); display:block; margin-bottom:4px;">Roll No</label>
-            <input type="text" id="editRollNo" required style="width:100%; padding:9px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);">
+            <label style="font-size:12px; font-weight:600; color:var(--text-dim); display:block; margin-bottom:4px;">Roll No</label>
+            <input type="text" id="editRollNo" required style="width:100%; padding:11px 14px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; color:var(--text);">
         </div>
         <div>
-            <label style="font-size:11px; color:var(--text-dim); display:block; margin-bottom:4px;">Branch</label>
-            <select id="editBranch" required style="width:100%; padding:9px 12px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);">
+            <label style="font-size:12px; font-weight:600; color:var(--text-dim); display:block; margin-bottom:4px;">Branch</label>
+            <select id="editBranch" required style="width:100%; padding:11px 14px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; color:var(--text);">
                 <option value="Computer Science">Computer Science (BCA / CSE)</option>
                 <option value="Information Tech">Information Technology (IT)</option>
                 <option value="Electronics">Electronics (ECE)</option>
                 <option value="General">General / Other</option>
             </select>
         </div>
-        <div style="display:flex; gap:10px; margin-top:8px;">
+        <div style="display:flex; gap:12px; margin-top:8px;">
             <button type="submit" class="btn" style="flex:1; cursor:pointer;">Save Changes</button>
             <button type="button" onclick="closeEditModal()" class="btn secondary" style="flex:1; cursor:pointer;">Cancel</button>
         </div>
